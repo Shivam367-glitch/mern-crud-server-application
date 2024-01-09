@@ -22,6 +22,7 @@ const registerUser = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -64,7 +65,7 @@ const getAllUser = async (req, res) => {
 
     return res.status(200).json({ message: "Users List", data: AllUsers,page,totalPages });
   } catch (error) {
-
+    console.log(error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
   
@@ -87,7 +88,7 @@ const getSingleUser = async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -103,6 +104,7 @@ const updateStatus=async(req,res)=>{
        res.status(200).json({message:"User Updated Successfully",data:user});
 
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -124,7 +126,7 @@ const deleteUser= async(req,res)=>{
 
     }
  } catch (error) {
-     console.log(error);
+  console.log(error.message);
     res.status(500).json({ message: "Internal Server Error" });
  }
 }
@@ -178,7 +180,7 @@ const userExport = async (req, res) => {
       writablestream.end();
 
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
       res.status(401).json(error)
   }
 }
@@ -193,7 +195,7 @@ const editUser=async (req,res)=>{
         await updatedUser.save();
         res.status(200).json({message:"user updated successfully",data:updatedUser});
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       res.status(500).json({ message: "Internal Server Error" });
     }
   
