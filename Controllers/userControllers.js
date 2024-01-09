@@ -32,12 +32,12 @@ const getAllUser = async (req, res) => {
   try {
     let { search, gender,status,sort ,page} = req.query;
     const ITEM_PER_PAGE=4; 
-   
+    search = search ? search.trim() : '';
      page=page || 1; 
      const skip = (page - 1) * ITEM_PER_PAGE;
      
     let query = {
-      FirstName: { $regex: new RegExp(search.trim(), 'i') },
+      FirstName: { $regex: new RegExp(search, 'i') },
     
     };
     
