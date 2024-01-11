@@ -10,7 +10,7 @@ app.use(express.json());
 
 const userRoutes=require('./Routes/router');
 
-app.use('/uploads',express.static('./uploads'));
+
 app.use("/files",express.static("./public/files"));
 app.use('/api/user',userRoutes);
 
