@@ -135,7 +135,29 @@ const userExport = async (req, res) => {
 
   console.log("userExport");
   try {
-      const usersdata = await users.find();
+     let { search, gender,status,sort} = req.query;
+    search = search ? search.trim() : '';
+    let query = {
+      FirstName: { $regex: new RegExp(search, 'i') },
+    
+    };
+    
+    if(gender!=="All"){
+      query.Gender=gender;
+    }
+    if(status!=="All"){
+      query.Status=status;
+    }
+
+      const Sort={};
+    
+      if(sort==="New"){
+        Sort.createdAt=-1;
+      }else{
+        Sort.createdAt=1;
+      }
+
+     const usersdata = await users.find(query).sort(Sort);
 
       const csvStream = csv.format({ headers: true });
 
