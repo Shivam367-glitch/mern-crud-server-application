@@ -1,5 +1,4 @@
 const users = require("../Models/usersSchema");
-const ObjectId = require("mongoose").ObjectId;
 const fs=require("node:fs");
 const csv=require("fast-csv");
 const BASE_URL=process.env.BASE_URL;
@@ -169,7 +168,7 @@ const userExport = async (req, res) => {
                   Phone: user.Mobile ? user.Mobile : "-",
                   Gender: user.Gender ? user.Gender : "-",
                   Status: user.Status ? user.Status : "-",
-                  Profile: user.Profile ? `http://localhost:4000/uploads/${user.Profile.filename}`: "-",
+                  Profile: user.Profile ? `${user.Profile.path}`: "-",
                   Location: user.Location ? user.Location : "-",
                   DateCreated: user.createdAt ? user.createdAt : "-",
                   DateUpdated: user.updatedAt ? user.updatedAt : "-",
