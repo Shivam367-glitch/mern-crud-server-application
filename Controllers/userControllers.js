@@ -132,79 +132,61 @@ const deleteUser= async(req,res)=>{
 
 
 const userExport = async (req, res) => {
-
-  console.log("userExport");
   try {
-     let { search, gender,status,sort} = req.query;
-    search = search ? search.trim() : '';
+    let { search, gender, status, sort } = req.query;
+    search = search ? search.trim() : "";
+
     let query = {
-      FirstName: { $regex: new RegExp(search, 'i') },
-    
+      FirstName: { $regex: new RegExp(search, "i") },
     };
-    
-    if(gender!=="All"){
-      query.Gender=gender;
-    }
-    if(status!=="All"){
-      query.Status=status;
+
+    if (gender !== "All") {
+      query.Gender = gender;
     }
 
-      const Sort={};
-    
-      if(sort==="New"){
-        Sort.createdAt=-1;
-      }else{
-        Sort.createdAt=1;
-      }
+    if (status !== "All") {
+      query.Status = status;
+    }
 
-     const usersdata = await users.find(query).sort(Sort);
+    const Sort = {};
+    Sort.createdAt = sort === "New" ? -1 : 1;
 
-      const csvStream = csv.format({ headers: true });
+    const usersdata = await users.find(query).sort(Sort);
 
-      if (!fs.existsSync("public/files/export/")) {
-          if (!fs.existsSync("public/files")) {
-              fs.mkdirSync("public/files/");
-          }
-          if (!fs.existsSync("public/files/export")) {
-              fs.mkdirSync("./public/files/export/");
-          }
-      }
+    // CSV headers
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=users.csv"
+    );
 
-      const writablestream = fs.createWriteStream(
-          "public/files/export/users.csv"
-      );
+    const csvStream = csv.format({ headers: true });
 
-      csvStream.pipe(writablestream);
+    // pipe directly to browser
+    csvStream.pipe(res);
 
-      writablestream.on("finish", function () {
-          res.json({
-              downloadUrl: `${BASE_URL}/files/export/users.csv`,
-          });
+    usersdata.forEach((user) => {
+      csvStream.write({
+        FirstName: user.FirstName || "-",
+        LastName: user.LastName || "-",
+        Email: user.Email || "-",
+        Phone: user.Mobile || "-",
+        Gender: user.Gender || "-",
+        Status: user.Status || "-",
+        Profile: user.Profile?.path || "-",
+        Location: user.Location || "-",
+        DateCreated: user.createdAt || "-",
+        DateUpdated: user.updatedAt || "-",
       });
-      if (usersdata.length > 0) {
-          usersdata.map((user) => {
-              csvStream.write({
-                  FirstName: user.FirstName ? user.FirstName : "-",
-                  LastName: user.LastName ? user.LastName : "-",
-                  Email: user.Email ? user.Email : "-",
-                  Phone: user.Mobile ? user.Mobile : "-",
-                  Gender: user.Gender ? user.Gender : "-",
-                  Status: user.Status ? user.Status : "-",
-                  Profile: user.Profile ? `${user.Profile.path}`: "-",
-                  Location: user.Location ? user.Location : "-",
-                  DateCreated: user.createdAt ? user.createdAt : "-",
-                  DateUpdated: user.updatedAt ? user.updatedAt : "-",
-              })
-          })
-      }
-      csvStream.end();
-      writablestream.end();
+    });
 
+    csvStream.end();
   } catch (error) {
     console.log(error.message);
-      res.status(401).json(error)
+    res.status(500).json({ error: error.message });
   }
-}
+};
+
 
 const editUser=async (req,res)=>{
     const { id } = req.params;
